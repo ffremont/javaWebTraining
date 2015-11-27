@@ -6,6 +6,9 @@
 package fr.mosica.javawebtraining;
 
 import fr.mosica.javawebtraining.model.Weather;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -24,19 +27,22 @@ import org.springframework.stereotype.Component;
 @Path("weather")
 @Component
 public class WeatherResource {
-    
+
     @GET
     @Consumes("application/json")
-    @Produces("application/json")    
-    public Weather getWeater(@QueryParam("zip") String zip) {
+    @Produces("application/json")
+    public Weather getWeater(@QueryParam("zip") String zip) throws NamingException {
         // http://api.openweathermap.org/data/2.5/weather?zip=79000,fr&appid=2de143494c0b295cca9337e1e96b00e0
         Client client = ClientBuilder.newClient();
         WebTarget target = client
                 .target("http://api.openweathermap.org")
                 .path("data/2.5/weather")
-                .queryParam("zip", zip+",fr")
+                .queryParam("zip", zip + ",fr")
                 .queryParam("appid", "2de143494c0b295cca9337e1e96b00e0");
-        
+
+        Context ctx = new InitialContext();
+        String url = (String) ctx.lookup("java:comp/env/openweathermap/weather");
+
         return target
                 .request(MediaType.APPLICATION_JSON_TYPE)
                 .get(Weather.class);
