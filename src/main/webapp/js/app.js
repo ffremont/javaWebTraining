@@ -5,8 +5,12 @@
         $event.preventDefault(); // annuler l'événement "submit"
         
         $.ajax({
+            method: "GET", // by default
             url: "rest/weather",
-            dataType : "json"
+            dataType : "json",
+            data: {
+                zip : $("#cp").val()
+            }
         }).done(function (data) {
             console.log(data);
             
